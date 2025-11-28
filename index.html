@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Student Life Dashboard</title><!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script><!-- Canva SDKs -->
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+    .app-wrapper {
+      width: 100%;
+      height: 100%;
+    }
+    /* Simple custom scrollbar for lists */
+    .nice-scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.4) transparent;
+    }
+    .nice-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .nice-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .nice-scrollbar::-webkit-scrollbar-thumb {
+      background-color: rgba(255,255,255,0.4);
+      border-radius: 999px;
+    }
+    /* Focus outline for accessibility */
+    .focus-ring:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="m-0 p-0">
+  <div id="app" class="app-wrapper bg-[#0f172a] text-white flex flex-col">
+   <header class="w-full">
+    <div class="max-w-6xl mx-auto px-4 py-4"><!-- Profile Card -->
+     <div class="bg-[#020617]/70 border border-white/10 rounded-2xl p-5 mb-4">
+      <div class="flex flex-col md:flex-row gap-5 items-start md:items-center"><!-- Avatar -->
+       <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-2 border-white/20 shadow-lg flex-shrink-0">
+        <svg aria-hidden="true" class="w-10 h-10 text-white" viewbox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="4" stroke="currentColor" stroke-width="1.5" /> <path d="M4 20c1.5-3 4-4.5 8-4.5s6.5 1.5 8 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+       </div><!-- Profile Info -->
+       <div class="flex-1">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+         <div>
+          <h1 id="profile-name" class="text-2xl font-bold tracking-tight"></h1>
+          <p id="profile-title" class="text-sm text-blue-300 font-medium mt-1"></p>
+          <p id="profile-bio" class="text-xs text-white/70 mt-2 max-w-2xl"></p>
+         </div>
+         <div class="hidden sm:flex flex-col items-end text-xs opacity-80"><span id="today-label"></span> <span id="item-count-label" class="mt-1"></span>
+         </div>
+        </div><!-- Profile Details Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+         <div class="bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+          <p class="text-[10px] text-white/50 uppercase tracking-wide">Age</p>
+          <p id="profile-age" class="text-sm font-semibold mt-0.5"></p>
+         </div>
+         <div class="bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+          <p class="text-[10px] text-white/50 uppercase tracking-wide">Education</p>
+          <p id="profile-education" class="text-sm font-semibold mt-0.5 truncate"></p>
+         </div>
+         <div class="bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+          <p class="text-[10px] text-white/50 uppercase tracking-wide">Location</p>
+          <p id="profile-location" class="text-sm font-semibold mt-0.5 truncate"></p>
+         </div>
+         <div class="bg-white/5 rounded-lg px-3 py-2 border border-white/10">
+          <p class="text-[10px] text-white/50 uppercase tracking-wide">Field</p>
+          <p id="profile-specialization" class="text-sm font-semibold mt-0.5 truncate"></p>
+         </div>
+        </div><!-- Certification Badge -->
+        <div class="mt-3">
+         <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-3 py-1.5">
+          <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewbox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg><span id="profile-certification" class="text-xs font-medium text-emerald-300"></span>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div><!-- Dashboard Title -->
+     <div class="text-center mb-2">
+      <h2 id="main-title" class="text-xl font-bold tracking-tight"></h2>
+      <p id="subtitle" class="text-xs opacity-80 mt-1"></p>
+     </div>
+    </div>
+   </header>
+   <main class="flex-1 w-full overflow-auto">
+    <div class="max-w-6xl mx-auto px-4 pb-4 flex flex-col gap-4"><!-- Top controls: category filters + new item -->
+     <section aria-label="Dashboard controls" class="mt-1">
+      <div class="flex flex-col md:flex-row gap-3 md:items-stretch"><!-- Category tabs -->
+       <nav aria-label="Sections" class="flex-1">
+        <div class="inline-flex rounded-full bg-[#020617]/60 p-1 border border-white/10"><button id="tab-entertainment" type="button" class="focus-ring px-4 py-1.5 rounded-full text-xs font-medium transition-colors" data-category="entertainment"> 🎬 Entertainment </button> <button id="tab-coding" type="button" class="focus-ring px-4 py-1.5 rounded-full text-xs font-medium transition-colors" data-category="coding"> 💻 Coding </button> <button id="tab-study" type="button" class="focus-ring px-4 py-1.5 rounded-full text-xs font-medium transition-colors" data-category="study"> 📚 Study &amp; Research </button>
+        </div>
+       </nav><!-- Quick add button -->
+       <div class="flex md:w-52"><button id="open-add-form" type="button" class="focus-ring flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#2563eb] hover:bg-[#1d4ed8] text-xs font-semibold px-3 py-2 shadow-md shadow-black/40 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"> <span id="add-item-button-text"></span> <span id="add-button-spinner" class="hidden w-3 h-3 border-2 border-white/40 border-t-transparent rounded-full animate-spin"></span> </button>
+       </div>
+      </div>
+     </section><!-- Main content: form + lists -->
+     <section aria-label="Dashboard content" class="flex-1 flex flex-col lg:flex-row gap-4 min-h-0"><!-- Add / Edit panel -->
+      <aside class="w-full lg:w-80 bg-[#020617]/70 border border-white/10 rounded-2xl p-4 flex flex-col gap-3">
+       <h2 class="text-sm font-semibold mb-1">Add something to your life</h2>
+       <form id="item-form" class="flex flex-col gap-3" autocomplete="off">
+        <div class="flex flex-col gap-1"><label for="title-input" class="text-xs font-medium">Title</label> <input id="title-input" name="title" type="text" class="focus-ring w-full rounded-lg bg-[#0b1220] border border-white/15 px-3 py-2 text-xs placeholder:text-white/30" placeholder="Movie name, project, topic..." required>
+        </div>
+        <div class="flex flex-col gap-1"><label for="category-input" class="text-xs font-medium">Category</label> <select id="category-input" name="category" class="focus-ring w-full rounded-lg bg-[#0b1220] border border-white/15 px-3 py-2 text-xs" required> <option value="entertainment">🎬 Entertainment</option> <option value="coding">💻 Coding</option> <option value="study">📚 Study &amp; Research</option> </select>
+        </div>
+        <div class="flex flex-col gap-1"><label for="priority-input" class="text-xs font-medium">Priority</label> <select id="priority-input" name="priority" class="focus-ring w-full rounded-lg bg-[#0b1220] border border-white/15 px-3 py-2 text-xs" required> <option value="low">Chill</option> <option value="medium">Normal</option> <option value="high">Important</option> </select>
+        </div>
+        <div class="flex flex-col gap-1"><label for="tags-input" class="text-xs font-medium">Tags</label> <input id="tags-input" name="tags" type="text" class="focus-ring w-full rounded-lg bg-[#0b1220] border border-white/15 px-3 py-2 text-xs placeholder:text-white/30" placeholder="e.g. weekend, JavaScript, exam prep">
+        </div>
+        <div class="flex flex-col gap-1"><label for="details-input" class="text-xs font-medium">Notes</label> <textarea id="details-input" name="details" rows="3" class="focus-ring w-full rounded-lg bg-[#0b1220] border border-white/15 px-3 py-2 text-xs placeholder:text-white/30 resize-none" placeholder="Details, links, or ideas..."></textarea>
+        </div>
+        <div class="flex flex-col gap-1"><label for="file-input" class="text-xs font-medium">Attach File (optional)</label> <input id="file-input" name="file" type="file" class="focus-ring w-full rounded-lg bg-[#0b1220] border border-white/15 px-3 py-2 text-xs file:mr-2 file:px-2 file:py-1 file:rounded file:border-0 file:text-xs file:bg-white/10 file:text-white hover:file:bg-white/20" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.zip,.mp3,.mp4">
+         <p class="text-[10px] text-white/50 mt-0.5">Max 5MB • PDF, images, docs, audio, video, zip</p>
+        </div>
+        <div class="flex items-center gap-2 pt-1"><button id="submit-button" type="submit" class="focus-ring flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-[#22c55e] hover:bg-[#16a34a] text-xs font-semibold px-3 py-2 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"> <span id="submit-button-text">Save item</span> <span id="submit-spinner" class="hidden w-3 h-3 border-2 border-white/40 border-t-transparent rounded-full animate-spin"></span> </button> <button id="reset-form-button" type="button" class="focus-ring inline-flex items-center justify-center rounded-lg border border-white/20 text-xs px-3 py-2 hover:bg-white/5 transition-colors"> Clear </button>
+        </div>
+        <p id="form-message" class="text-[11px] mt-1 min-h-[1.2em]"></p>
+       </form>
+       <div class="mt-2 text-[11px] opacity-70">
+        <p>Tip: Use this for anything—movies to watch, coding ideas, or research topics. Your items are saved to a private Canva sheet.</p>
+       </div>
+      </aside><!-- Lists -->
+      <section class="flex-1 flex flex-col gap-3 min-h-0">
+       <div class="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1 min-h-0"><!-- Entertainment -->
+        <div class="flex flex-col bg-[#020617]/70 border border-white/10 rounded-2xl p-3 min-h-0">
+         <div class="flex items-center justify-between mb-2">
+          <h2 id="entertainment-title" class="text-xs font-semibold flex items-center gap-1">🎬 Entertainment</h2><span id="ent-count" class="text-[10px] opacity-70"></span>
+         </div>
+         <div id="entertainment-list" class="nice-scrollbar flex-1 min-h-0 overflow-y-auto space-y-2 text-xs" aria-label="Entertainment list"></div>
+        </div><!-- Coding -->
+        <div class="flex flex-col bg-[#020617]/70 border border-white/10 rounded-2xl p-3 min-h-0">
+         <div class="flex items-center justify-between mb-2">
+          <h2 id="coding-title" class="text-xs font-semibold flex items-center gap-1">💻 Coding</h2><span id="coding-count" class="text-[10px] opacity-70"></span>
+         </div>
+         <div id="coding-list" class="nice-scrollbar flex-1 min-h-0 overflow-y-auto space-y-2 text-xs" aria-label="Coding list"></div>
+        </div><!-- Study -->
+        <div class="flex flex-col bg-[#020617]/70 border border-white/10 rounded-2xl p-3 min-h-0">
+         <div class="flex items-center justify-between mb-2">
+          <h2 id="study-title" class="text-xs font-semibold flex items-center gap-1">📚 Study &amp; Research</h2><span id="study-count" class="text-[10px] opacity-70"></span>
+         </div>
+         <div id="study-list" class="nice-scrollbar flex-1 min-h-0 overflow-y-auto space-y-2 text-xs" aria-label="Study and research list"></div>
+        </div>
+       </div><!-- Footer -->
+       <footer class="w-full mt-1">
+        <div class="flex items-center justify-between text-[11px] opacity-70"><span id="footer-text"></span> <span>✔ = done today, long-press delete to confirm</span>
+        </div>
+       </footer>
+      </section>
+     </section>
+    </div>
+   </main>
+  </div>
+  <script>
+    // --------- CONFIG & ELEMENT SDK ---------
+    const defaultConfig = {
+      // Colors (5 max): background, surface, text, primary, secondary
+      background_color: "#0f172a",      // BACKGROUND
+      surface_color: "#020617",         // SECONDARY_SURFACE
+      text_color: "#f9fafb",            // TEXT
+      primary_color: "#2563eb",         // PRIMARY_ACTION
+      secondary_color: "#64748b",       // SECONDARY_ACTION
+
+      // Typography
+      font_family: "system-ui",
+      font_size: 14,
+
+      // Text content
+      main_title: "🎯 Student Life Command Center",
+      subtitle: "Your personal hub for entertainment, coding projects & study goals",
+      entertainment_title: "Movies, Music & Fun",
+      coding_title: "Code Ideas & Projects",
+      study_title: "Study & Research",
+      add_item_button_text: "Add to dashboard",
+      empty_state_text: "Nothing here yet. Add something!",
+      footer_text: "This dashboard is private to you inside Canva.",
+      
+      // Profile information
+      profile_name: "Ayoush Karn",
+      profile_title: "Full-Stack Web Developer & Student",
+      profile_age: "17 years",
+      profile_education: "Grade 11, Edutek College",
+      profile_location: "Duhabi-2, Sunsari",
+      profile_specialization: "Computer Science",
+      profile_certification: "Certified Web Developer - SoloLearn",
+      profile_bio: "Passionate programmer specializing in web development with hands-on experience in modern technologies. Currently pursuing Computer Science while building real-world projects and expanding my technical expertise."
+    };
+
+    // Helper: apply config to DOM
+    async function applyConfigToDom(config) {
+      const cfg = config || defaultConfig;
+
+      // Colors
+      const bgColor = cfg.background_color || defaultConfig.background_color;
+      const surfaceColor = cfg.surface_color || defaultConfig.surface_color;
+      const textColor = cfg.text_color || defaultConfig.text_color;
+      const primaryColor = cfg.primary_color || defaultConfig.primary_color;
+      const secondaryColor = cfg.secondary_color || defaultConfig.secondary_color;
+
+      // Font
+      const fontFamily = cfg.font_family || defaultConfig.font_family;
+      const baseFont = cfg.font_size || defaultConfig.font_size;
+
+      const app = document.getElementById("app");
+      if (app) {
+        app.style.backgroundColor = bgColor;
+        app.style.color = textColor;
+        app.style.fontFamily = fontFamily + ", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+      }
+
+      // Surfaces
+      const surfaces = document.querySelectorAll(
+        "aside, section > .grid > div, header > div > div, footer"
+      );
+      surfaces.forEach((el) => {
+        el.style.backgroundColor = surfaceColor + "b3"; // add slight transparency
+        el.style.borderColor = textColor + "1a";
+      });
+
+      // Primary button: add form button
+      const addBtn = document.getElementById("open-add-form");
+      if (addBtn) {
+        addBtn.style.backgroundColor = primaryColor;
+      }
+
+      // Submit button in form
+      const submitBtn = document.getElementById("submit-button");
+      if (submitBtn) {
+        submitBtn.style.backgroundColor = "#22c55e"; // keep green as status
+      }
+
+      // Secondary actions (like small links or badges)
+      const secondaryEls = document.querySelectorAll(".secondary-text");
+      secondaryEls.forEach((el) => {
+        el.style.color = secondaryColor;
+      });
+
+      // Typography scaling
+      const profileName = document.getElementById("profile-name");
+      const profileTitle = document.getElementById("profile-title");
+      const profileBio = document.getElementById("profile-bio");
+      const mainTitle = document.getElementById("main-title");
+      const subtitle = document.getElementById("subtitle");
+      const sectionTitles = [
+        document.getElementById("entertainment-title"),
+        document.getElementById("coding-title"),
+        document.getElementById("study-title")
+      ];
+      const footerText = document.getElementById("footer-text");
+      const itemCountLabel = document.getElementById("item-count-label");
+      const todayLabel = document.getElementById("today-label");
+
+      if (profileName) profileName.style.fontSize = (baseFont * 1.7) + "px";
+      if (profileTitle) profileTitle.style.fontSize = (baseFont * 0.9) + "px";
+      if (profileBio) profileBio.style.fontSize = (baseFont * 0.85) + "px";
+      if (mainTitle) mainTitle.style.fontSize = (baseFont * 1.4) + "px";
+      if (subtitle) subtitle.style.fontSize = (baseFont * 0.85) + "px";
+      sectionTitles.forEach((el) => {
+        if (el) el.style.fontSize = (baseFont * 0.9) + "px";
+      });
+      if (footerText) footerText.style.fontSize = (baseFont * 0.8) + "px";
+      if (itemCountLabel) itemCountLabel.style.fontSize = (baseFont * 0.8) + "px";
+      if (todayLabel) todayLabel.style.fontSize = (baseFont * 0.8) + "px";
+
+      // Profile content
+      const profileNameEl = document.getElementById("profile-name");
+      if (profileNameEl) {
+        profileNameEl.textContent = cfg.profile_name || defaultConfig.profile_name;
+      }
+      const profileTitleEl = document.getElementById("profile-title");
+      if (profileTitleEl) {
+        profileTitleEl.textContent = cfg.profile_title || defaultConfig.profile_title;
+      }
+      const profileAgeEl = document.getElementById("profile-age");
+      if (profileAgeEl) {
+        profileAgeEl.textContent = cfg.profile_age || defaultConfig.profile_age;
+      }
+      const profileEducationEl = document.getElementById("profile-education");
+      if (profileEducationEl) {
+        profileEducationEl.textContent = cfg.profile_education || defaultConfig.profile_education;
+      }
+      const profileLocationEl = document.getElementById("profile-location");
+      if (profileLocationEl) {
+        profileLocationEl.textContent = cfg.profile_location || defaultConfig.profile_location;
+      }
+      const profileSpecializationEl = document.getElementById("profile-specialization");
+      if (profileSpecializationEl) {
+        profileSpecializationEl.textContent = cfg.profile_specialization || defaultConfig.profile_specialization;
+      }
+      const profileCertificationEl = document.getElementById("profile-certification");
+      if (profileCertificationEl) {
+        profileCertificationEl.textContent = cfg.profile_certification || defaultConfig.profile_certification;
+      }
+      const profileBioEl = document.getElementById("profile-bio");
+      if (profileBioEl) {
+        profileBioEl.textContent = cfg.profile_bio || defaultConfig.profile_bio;
+      }
+
+      // Text content
+      const titleEl = document.getElementById("main-title");
+      if (titleEl) {
+        titleEl.textContent = cfg.main_title || defaultConfig.main_title;
+      }
+      const subtitleEl = document.getElementById("subtitle");
+      if (subtitleEl) {
+        subtitleEl.textContent = cfg.subtitle || defaultConfig.subtitle;
+      }
+      const entTitleEl = document.getElementById("entertainment-title");
+      if (entTitleEl) {
+        const baseEmoji = "🎬 ";
+        entTitleEl.textContent = baseEmoji + (cfg.entertainment_title || defaultConfig.entertainment_title);
+      }
+      const codingTitleEl = document.getElementById("coding-title");
+      if (codingTitleEl) {
+        const baseEmoji = "💻 ";
+        codingTitleEl.textContent = baseEmoji + (cfg.coding_title || defaultConfig.coding_title);
+      }
+      const studyTitleEl = document.getElementById("study-title");
+      if (studyTitleEl) {
+        const baseEmoji = "📚 ";
+        studyTitleEl.textContent = baseEmoji + (cfg.study_title || defaultConfig.study_title);
+      }
+      const addBtnText = document.getElementById("add-item-button-text");
+      if (addBtnText) {
+        addBtnText.textContent = cfg.add_item_button_text || defaultConfig.add_item_button_text;
+      }
+      const footerTextEl = document.getElementById("footer-text");
+      if (footerTextEl) {
+        footerTextEl.textContent = cfg.footer_text || defaultConfig.footer_text;
+      }
+    }
+
+    // Initialize Element SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          await applyConfigToDom(config);
+        },
+        mapToCapabilities: (config) => {
+          const cfg = config || defaultConfig;
+          return {
+            recolorables: [
+              {
+                get: () => cfg.background_color || defaultConfig.background_color,
+                set: (value) => {
+                  cfg.background_color = value;
+                  window.elementSdk.setConfig({ background_color: value });
+                }
+              },
+              {
+                get: () => cfg.surface_color || defaultConfig.surface_color,
+                set: (value) => {
+                  cfg.surface_color = value;
+                  window.elementSdk.setConfig({ surface_color: value });
+                }
+              },
+              {
+                get: () => cfg.text_color || defaultConfig.text_color,
+                set: (value) => {
+                  cfg.text_color = value;
+                  window.elementSdk.setConfig({ text_color: value });
+                }
+              },
+              {
+                get: () => cfg.primary_color || defaultConfig.primary_color,
+                set: (value) => {
+                  cfg.primary_color = value;
+                  window.elementSdk.setConfig({ primary_color: value });
+                }
+              },
+              {
+                get: () => cfg.secondary_color || defaultConfig.secondary_color,
+                set: (value) => {
+                  cfg.secondary_color = value;
+                  window.elementSdk.setConfig({ secondary_color: value });
+                }
+              }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => cfg.font_family || defaultConfig.font_family,
+              set: (value) => {
+                cfg.font_family = value;
+                window.elementSdk.setConfig({ font_family: value });
+              }
+            },
+            fontSizeable: {
+              get: () => cfg.font_size || defaultConfig.font_size,
+              set: (value) => {
+                cfg.font_size = value;
+                window.elementSdk.setConfig({ font_size: value });
+              }
+            }
+          };
+        },
+        mapToEditPanelValues: (config) => {
+          const cfg = config || defaultConfig;
+          return new Map([
+            ["main_title", cfg.main_title || defaultConfig.main_title],
+            ["subtitle", cfg.subtitle || defaultConfig.subtitle],
+            ["entertainment_title", cfg.entertainment_title || defaultConfig.entertainment_title],
+            ["coding_title", cfg.coding_title || defaultConfig.coding_title],
+            ["study_title", cfg.study_title || defaultConfig.study_title],
+            ["add_item_button_text", cfg.add_item_button_text || defaultConfig.add_item_button_text],
+            ["empty_state_text", cfg.empty_state_text || defaultConfig.empty_state_text],
+            ["footer_text", cfg.footer_text || defaultConfig.footer_text],
+            ["profile_name", cfg.profile_name || defaultConfig.profile_name],
+            ["profile_title", cfg.profile_title || defaultConfig.profile_title],
+            ["profile_age", cfg.profile_age || defaultConfig.profile_age],
+            ["profile_education", cfg.profile_education || defaultConfig.profile_education],
+            ["profile_location", cfg.profile_location || defaultConfig.profile_location],
+            ["profile_specialization", cfg.profile_specialization || defaultConfig.profile_specialization],
+            ["profile_certification", cfg.profile_certification || defaultConfig.profile_certification],
+            ["profile_bio", cfg.profile_bio || defaultConfig.profile_bio]
+          ]);
+        }
+      });
+    } else {
+      // Fallback: apply default config if SDK not available
+      applyConfigToDom(defaultConfig);
+    }
+
+    // Show today's date
+    (function setToday() {
+      const el = document.getElementById("today-label");
+      if (!el) return;
+      const now = new Date();
+      const options = { weekday: "short", year: "numeric", month: "short", day: "numeric" };
+      el.textContent = now.toLocaleDateString(undefined, options);
+    })();
+
+    // --------- DATA SDK & APP LOGIC ---------
+    let currentRecords = []; // last-known data from backend
+    let isSubmitting = false;
+    let isDeletingId = null; // backendId currently in "confirm delete" state
+
+    const listsByCategory = {
+      entertainment: document.getElementById("entertainment-list"),
+      coding: document.getElementById("coding-list"),
+      study: document.getElementById("study-list")
+    };
+
+    const countLabels = {
+      entertainment: document.getElementById("ent-count"),
+      coding: document.getElementById("coding-count"),
+      study: document.getElementById("study-count")
+    };
+
+    const itemCountLabel = document.getElementById("item-count-label");
+
+    function getConfigSafe() {
+      if (window.elementSdk && window.elementSdk.config) {
+        return window.elementSdk.config;
+      }
+      return defaultConfig;
+    }
+
+    function showFormMessage(text, type) {
+      const el = document.getElementById("form-message");
+      if (!el) return;
+      el.textContent = text || "";
+      el.className = "text-[11px] mt-1 min-h-[1.2em]";
+      if (type === "error") {
+        el.classList.add("text-red-400");
+      } else if (type === "success") {
+        el.classList.add("text-emerald-400");
+      } else {
+        el.classList.add("text-white/70");
+      }
+    }
+
+    function setSubmittingState(submitting, context) {
+      isSubmitting = submitting;
+      const submitBtn = document.getElementById("submit-button");
+      const submitSpinner = document.getElementById("submit-spinner");
+      const submitText = document.getElementById("submit-button-text");
+      const addBtn = document.getElementById("open-add-form");
+      const addSpinner = document.getElementById("add-button-spinner");
+
+      if (submitBtn && submitSpinner && submitText) {
+        if (context === "form") {
+          submitBtn.disabled = submitting;
+        }
+        submitSpinner.classList.toggle("hidden", !submitting);
+        submitText.textContent = submitting ? "Saving..." : "Save item";
+      }
+
+      if (addBtn && addSpinner) {
+        if (context === "quick") {
+          addBtn.disabled = submitting;
+        }
+        addSpinner.classList.toggle("hidden", !submitting);
+      }
+    }
+
+    function setDeletingState(backendId, deleting) {
+      const card = document.querySelector('[data-backend-id="' + backendId + '"]');
+      if (!card) return;
+      const deleteBtn = card.querySelector(".delete-btn");
+      const confirmBar = card.querySelector(".confirm-delete-bar");
+      if (!deleteBtn || !confirmBar) return;
+      if (deleting) {
+        deleteBtn.classList.add("hidden");
+        confirmBar.classList.remove("hidden");
+      } else {
+        deleteBtn.classList.remove("hidden");
+        confirmBar.classList.add("hidden");
+      }
+    }
+
+    function updateCounts() {
+      const byCategory = { entertainment: 0, coding: 0, study: 0 };
+      currentRecords.forEach((r) => {
+        if (byCategory[r.category] !== undefined) {
+          byCategory[r.category]++;
+        }
+      });
+
+      Object.keys(countLabels).forEach((cat) => {
+        const el = countLabels[cat];
+        if (!el) return;
+        const total = byCategory[cat];
+        el.textContent = total === 0 ? "No items" : total + " item" + (total === 1 ? "" : "s");
+      });
+
+      if (itemCountLabel) {
+        const total = currentRecords.length;
+        itemCountLabel.textContent =
+          (total === 0 ? "Start by adding something" : total + " total item" + (total === 1 ? "" : "s"));
+      }
+    }
+
+    function createCardElement(record) {
+      const cfg = getConfigSafe();
+      const emptyText = cfg.empty_state_text || defaultConfig.empty_state_text;
+
+      const wrapper = document.createElement("article");
+      wrapper.className = "group rounded-xl bg-[#020617]/80 border border-white/15 px-3 py-2.5 flex flex-col gap-1.5";
+      wrapper.dataset.backendId = record.__backendId;
+
+      const header = document.createElement("div");
+      header.className = "flex items-start justify-between gap-2";
+
+      const titleBlock = document.createElement("div");
+      titleBlock.className = "flex-1 min-w-0";
+
+      const title = document.createElement("h3");
+      title.className = "text-[11px] font-semibold truncate";
+      title.textContent = record.title || "(untitled)";
+
+      const meta = document.createElement("p");
+      meta.className = "text-[10px] text-white/60 flex flex-wrap gap-1 mt-0.5";
+      const priorityBadge = document.createElement("span");
+      priorityBadge.className =
+        "inline-flex items-center px-1.5 py-[1px] rounded-full text-[9px] font-medium";
+      if (record.priority === "high") {
+        priorityBadge.textContent = "Important";
+        priorityBadge.classList.add("bg-red-500/20", "text-red-300");
+      } else if (record.priority === "medium") {
+        priorityBadge.textContent = "Normal";
+        priorityBadge.classList.add("bg-amber-500/20", "text-amber-200");
+      } else {
+        priorityBadge.textContent = "Chill";
+        priorityBadge.classList.add("bg-emerald-500/20", "text-emerald-200");
+      }
+
+      const dateSpan = document.createElement("span");
+      dateSpan.className = "opacity-80";
+      if (record.created_at) {
+        const d = new Date(record.created_at);
+        if (!isNaN(d.getTime())) {
+          dateSpan.textContent = d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+        }
+      }
+
+      meta.appendChild(priorityBadge);
+      if (dateSpan.textContent) {
+        meta.appendChild(dateSpan);
+      }
+
+      titleBlock.appendChild(title);
+      titleBlock.appendChild(meta);
+
+      const actionCol = document.createElement("div");
+      actionCol.className = "flex flex-col items-end gap-1";
+
+      const completeBtn = document.createElement("button");
+      completeBtn.type = "button";
+      completeBtn.className =
+        "focus-ring text-[10px] inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full border border-emerald-400/40 text-emerald-200 hover:bg-emerald-500/10 transition-colors";
+      completeBtn.textContent = record.completed ? "Done" : "Mark done";
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className =
+        "focus-ring delete-btn text-[10px] inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full border border-red-400/40 text-red-200 hover:bg-red-500/10 transition-colors";
+      deleteBtn.textContent = "Delete";
+
+      const confirmBar = document.createElement("div");
+      confirmBar.className =
+        "confirm-delete-bar hidden mt-1 flex items-center gap-1 text-[10px]";
+      const confirmText = document.createElement("span");
+      confirmText.textContent = "Confirm?";
+      const yesBtn = document.createElement("button");
+      yesBtn.type = "button";
+      yesBtn.className =
+        "focus-ring px-1.5 py-0.5 rounded-full bg-red-500 text-white";
+      yesBtn.textContent = "Yes";
+      const noBtn = document.createElement("button");
+      noBtn.type = "button";
+      noBtn.className =
+        "focus-ring px-1.5 py-0.5 rounded-full bg-white/10 text-white";
+      noBtn.textContent = "No";
+      confirmBar.appendChild(confirmText);
+      confirmBar.appendChild(yesBtn);
+      confirmBar.appendChild(noBtn);
+
+      actionCol.appendChild(completeBtn);
+      actionCol.appendChild(deleteBtn);
+      actionCol.appendChild(confirmBar);
+
+      header.appendChild(titleBlock);
+      header.appendChild(actionCol);
+
+      const notes = document.createElement("p");
+      notes.className = "text-[10px] text-white/70 mt-0.5 line-clamp-3";
+      notes.textContent = record.details || emptyText;
+
+      const tagsLine = document.createElement("p");
+      tagsLine.className = "text-[10px] text-white/50 mt-0.5";
+      if (record.tags) {
+        tagsLine.textContent = "#" + record.tags.split(",").map(t => t.trim()).filter(Boolean).join(" #");
+      } else {
+        tagsLine.textContent = "";
+      }
+
+      // File attachment display
+      let fileSection = null;
+      if (record.file_name) {
+        fileSection = document.createElement("div");
+        fileSection.className = "mt-2 flex items-center gap-2 p-2 rounded-lg bg-white/5 border border-white/10";
+        
+        const fileIcon = document.createElement("span");
+        fileIcon.textContent = "📎";
+        fileIcon.className = "text-sm";
+        
+        const fileInfo = document.createElement("div");
+        fileInfo.className = "flex-1 min-w-0";
+        
+        const fileName = document.createElement("p");
+        fileName.className = "text-[10px] font-medium truncate";
+        fileName.textContent = record.file_name;
+        
+        const fileSize = document.createElement("p");
+        fileSize.className = "text-[9px] text-white/50";
+        const sizeKB = Math.round((record.file_size || 0) / 1024);
+        fileSize.textContent = sizeKB + " KB • " + (record.file_type || "file");
+        
+        fileInfo.appendChild(fileName);
+        fileInfo.appendChild(fileSize);
+        
+        const downloadBtn = document.createElement("a");
+        downloadBtn.className = "focus-ring text-[10px] px-2 py-1 rounded bg-white/10 hover:bg-white/20 transition-colors";
+        downloadBtn.textContent = "Download";
+        downloadBtn.href = record.file_data || "#";
+        downloadBtn.download = record.file_name || "file";
+        downloadBtn.target = "_blank";
+        downloadBtn.rel = "noopener noreferrer";
+        
+        fileSection.appendChild(fileIcon);
+        fileSection.appendChild(fileInfo);
+        fileSection.appendChild(downloadBtn);
+      }
+
+      wrapper.appendChild(header);
+      wrapper.appendChild(notes);
+      if (tagsLine.textContent) {
+        wrapper.appendChild(tagsLine);
+      }
+      if (fileSection) {
+        wrapper.appendChild(fileSection);
+      }
+
+      // Handlers
+      completeBtn.addEventListener("click", async () => {
+        if (!window.dataSdk || !record.__backendId) return;
+        const updated = { ...record, completed: !record.completed };
+        completeBtn.disabled = true;
+        const result = await window.dataSdk.update(updated);
+        completeBtn.disabled = false;
+        if (!result.isOk) {
+          showFormMessage("Could not update item. Try again.", "error");
+        } else {
+          showFormMessage("Item updated.", "success");
+        }
+      });
+
+      deleteBtn.addEventListener("click", () => {
+        isDeletingId = record.__backendId;
+        setDeletingState(record.__backendId, true);
+      });
+
+      noBtn.addEventListener("click", () => {
+        isDeletingId = null;
+        setDeletingState(record.__backendId, false);
+      });
+
+      yesBtn.addEventListener("click", async () => {
+        if (!window.dataSdk) return;
+        yesBtn.disabled = true;
+        noBtn.disabled = true;
+        const result = await window.dataSdk.delete(record);
+        if (!result.isOk) {
+          showFormMessage("Could not delete item. Try again.", "error");
+          yesBtn.disabled = false;
+          noBtn.disabled = false;
+        } else {
+          showFormMessage("Item deleted.", "success");
+        }
+      });
+
+      return wrapper;
+    }
+
+    function renderLists(data) {
+      // Track existing card elements by backendId to update selectively
+      const containers = listsByCategory;
+
+      // Build maps of existing children
+      const existingMaps = {};
+      Object.keys(containers).forEach((cat) => {
+        const cont = containers[cat];
+        if (!cont) return;
+        const map = new Map();
+        Array.from(cont.children).forEach((child) => {
+          const id = child.dataset.backendId;
+          if (id) map.set(id, child);
+        });
+        existingMaps[cat] = map;
+      });
+
+      // Add / update
+      data.forEach((record) => {
+        const cat = record.category;
+        const cont = containers[cat];
+        if (!cont) return;
+        const map = existingMaps[cat];
+        if (map && map.has(record.__backendId)) {
+          // For simplicity, replace existing card
+          const oldEl = map.get(record.__backendId);
+          const newEl = createCardElement(record);
+          cont.replaceChild(newEl, oldEl);
+          map.delete(record.__backendId);
+        } else {
+          const newEl = createCardElement(record);
+          cont.appendChild(newEl);
+        }
+      });
+
+      // Remove deleted
+      Object.keys(existingMaps).forEach((cat) => {
+        const map = existingMaps[cat];
+        map.forEach((el) => el.remove());
+      });
+
+      // Empty states
+      const cfg = getConfigSafe();
+      const emptyText = cfg.empty_state_text || defaultConfig.empty_state_text;
+      Object.keys(containers).forEach((cat) => {
+        const cont = containers[cat];
+        if (!cont) return;
+        if (cont.children.length === 0) {
+          const p = document.createElement("p");
+          p.className = "text-[11px] text-white/40 italic";
+          p.textContent = emptyText;
+          cont.appendChild(p);
+        }
+      });
+
+      updateCounts();
+    }
+
+    // Data handler for Data SDK
+    const dataHandler = {
+      onDataChanged(data) {
+        currentRecords = data || [];
+        renderLists(currentRecords);
+      }
+    };
+
+    async function initDataSdk() {
+      if (!window.dataSdk) return;
+      const result = await window.dataSdk.init(dataHandler);
+      if (!result.isOk) {
+        showFormMessage("Could not connect to data sheet.", "error");
+      }
+    }
+
+    initDataSdk();
+
+    // --------- FORM & INTERACTIONS ---------
+    const itemForm = document.getElementById("item-form");
+    const resetFormButton = document.getElementById("reset-form-button");
+    const openAddFormButton = document.getElementById("open-add-form");
+    const categoryInput = document.getElementById("category-input");
+
+    if (itemForm) {
+      itemForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!window.dataSdk || isSubmitting) return;
+
+        if (currentRecords.length >= 999) {
+          showFormMessage("You reached the 999 item limit. Delete something first.", "error");
+          return;
+        }
+
+        const formData = new FormData(itemForm);
+        const title = (formData.get("title") || "").toString().trim();
+        const category = (formData.get("category") || "").toString();
+        const priority = (formData.get("priority") || "").toString();
+        const tags = (formData.get("tags") || "").toString().trim();
+        const details = (formData.get("details") || "").toString().trim();
+
+        if (!title) {
+          showFormMessage("Please enter a title.", "error");
+          return;
+        }
+
+        // Handle file upload
+        const fileInput = document.getElementById("file-input");
+        const file = fileInput && fileInput.files && fileInput.files[0];
+        
+        let fileData = {
+          file_name: "",
+          file_size: 0,
+          file_type: "",
+          file_data: ""
+        };
+
+        if (file) {
+          // Check file size (5MB limit)
+          const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+          if (file.size > maxSize) {
+            showFormMessage("File too large. Maximum size is 5MB.", "error");
+            return;
+          }
+
+          // Read file as base64
+          try {
+            const base64 = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(file);
+            });
+
+            fileData = {
+              file_name: file.name,
+              file_size: file.size,
+              file_type: file.type || "application/octet-stream",
+              file_data: base64
+            };
+          } catch (err) {
+            showFormMessage("Could not read file. Try again.", "error");
+            return;
+          }
+        }
+
+        const record = {
+          category,
+          title,
+          details: details || "",
+          tags: tags || "",
+          priority: priority || "medium",
+          created_at: new Date().toISOString(),
+          completed: false,
+          ...fileData
+        };
+
+        setSubmittingState(true, "form");
+        showFormMessage("Saving...", "info");
+        const result = await window.dataSdk.create(record);
+        setSubmittingState(false, "form");
+
+        if (!result.isOk) {
+          showFormMessage("Could not save item. Please try again.", "error");
+        } else {
+          showFormMessage("Saved!", "success");
+          itemForm.reset();
+          // keep last selected category
+        }
+      });
+    }
+
+    if (resetFormButton && itemForm) {
+      resetFormButton.addEventListener("click", () => {
+        itemForm.reset();
+        showFormMessage("", "info");
+      });
+    }
+
+    // "Add" button scrolls to form and focuses title
+    if (openAddFormButton) {
+      openAddFormButton.addEventListener("click", () => {
+        const titleInput = document.getElementById("title-input");
+        if (!titleInput) return;
+        titleInput.focus();
+      });
+    }
+
+    // Tabs: switch category in form when clicked
+    function handleTabClick(category) {
+      if (!categoryInput) return;
+      categoryInput.value = category;
+    }
+
+    const tabEntertainment = document.getElementById("tab-entertainment");
+    const tabCoding = document.getElementById("tab-coding");
+    const tabStudy = document.getElementById("tab-study");
+
+    [tabEntertainment, tabCoding, tabStudy].forEach((tab) => {
+      if (!tab) return;
+      tab.addEventListener("click", () => {
+        const category = tab.dataset.category;
+        handleTabClick(category);
+        // Simple visual active state
+        [tabEntertainment, tabCoding, tabStudy].forEach((t) => {
+          if (!t) return;
+          if (t.dataset.category === category) {
+            t.classList.add("bg-white/20");
+          } else {
+            t.classList.remove("bg-white/20");
+          }
+        });
+      });
+    });
+
+    // Set default active tab
+    if (tabEntertainment) {
+      tabEntertainment.classList.add("bg-white/20");
+    }
+
+    // Apply default config at first load in case elementSdk isn't ready yet
+    applyConfigToDom(defaultConfig);
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a5725731771cc10',t:'MTc2NDMwNDM5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
